@@ -59,20 +59,24 @@ void create_udp(const char *port){
 
 vector<bool> to_data(const vector<size_t>& time){
     vector<bool> ret;
-    for(auto x:time){
-        if(x<D[0]){
-        }
-        else if(x<D[1]){
-            ret.push_back(0);
-        }
-        else if(x<D[2]){
-            ret.push_back(1);
-        }
-        else if(x<D[3]){
-            ret.push_back(0);
+    size_t x = 1;
+    for(size_t i = 0 ; i < time.size() ; i ++){
+        if(i+1==x){
+            x<<=1;
+            if(time[i]<D[2]){
+                ret.push_back(0);
+            }
+            else{
+                ret.push_back(1);
+            }
         }
         else{
-            ret.push_back(1);
+            if(time[i]<D[1]){
+                ret.push_back(0);
+            }
+            else{
+                ret.push_back(1);
+            }
         }
     }
     return ret;
@@ -142,6 +146,24 @@ string to_str(vector<bool> data){
     return res;
 }
 
+char get_char(){
+    static char buf[100];
+    vector<size_t> time;
+    for(int i = 0 ; i < 12 ; i ++){
+        timer t;
+        recv(fd,buf,sizeof(buf),0);
+        t.stop();
+        if(t.time>=D[0]){
+            time.push_back(t.time);
+            cout << i << ": ";
+            t.print();
+        }
+        else i--;
+    }
+    char c=to_int(decode(to_data(time)));
+    return c;
+}
+
 
 int main (int argc, char *argv[]){
     if(argc!=2){
@@ -150,35 +172,12 @@ int main (int argc, char *argv[]){
     }
     create_udp(argv[1]);
     char buf[100];
-    bzero(buf,sizeof(buf));
     recv(fd,buf,sizeof(buf),0);
-    vector<size_t> time;
-    for(int i = 0 ; i < 15 ; i ++){
-        timer t;
-        recv(fd,buf,sizeof(buf),0);
-        t.stop();
-        if(t.time>=D[0]){
-            time.push_back(t.time);
-            cout << i << ": ";
-            t.print();
-        }
-        else i--;
-    }
-    size_t cnt=to_int(decode(to_data(time)));
+    size_t cnt = get_char();
     cout << "Data cnt: " << cnt << endl;
-    time.clear();
+    string out;
     for(size_t i = 0 ; i < cnt ; i ++){
-        timer t;
-        recv(fd,buf,sizeof(buf),0);
-        t.stop();
-        if(t.time>=D[0]){
-            time.push_back(t.time);
-            cout << i << ": ";
-            t.print();
-        }
-        else i--;
+        out+=get_char();
     }
-    string out = to_str(decode(to_data(time)));
     cout << "Data: "  << out  << endl;
-
 }

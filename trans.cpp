@@ -18,7 +18,7 @@ extern "C"{
 using namespace std;
 
 static int fd;
-const int BURST_CNT=5;
+const int BURST_CNT=20;
 
 void perror_exit(const char* str){
     perror(str);
@@ -94,6 +94,15 @@ vector<int> from_int(size_t x){
     return to_time(encode(move(tmp)));
 }
 
+vector<int> from_char(char x){
+    vector<bool> tmp;
+    for(int i = 0 ; i < 8 ; i ++){
+        tmp.push_back(x&1);
+        x>>=1;
+    }
+    return to_time(encode(move(tmp)));
+}
+
 void send_data(const vector<int> &time){
     for(auto x:time){
         send_garbage();
@@ -107,15 +116,14 @@ int main (int argc, char *argv[]){
         exit(EXIT_FAILURE);
     }
     create_udp(argv[1],argv[2]);
-    vector<bool> tmp;
-    for(char c:string(argv[3])){
-        for(int i = 0 ; i < 8 ; i ++){
-            tmp.push_back(c&1);
-            c>>=1;
-        }
+    // Assuming data not larger than 255
+    string str(argv[3]);
+    auto header=from_char((char)str.size());
+    vector<int> data;
+    for(auto c:str){
+        auto tmp=from_char(c);
+        data.insert(data.end(),tmp.begin(),tmp.end());
     }
-    auto data=to_time(encode(tmp));
-    auto header=from_int(data.size());
     send_data(header);
     send_data(data);
     send_garbage();
