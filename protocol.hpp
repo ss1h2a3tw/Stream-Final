@@ -1,10 +1,10 @@
 #pragma once
 
 enum Interval{
-    ZERO    =100000,
-    ONE     =200000,
-    C_ZERO  =300000,
-    C_ONE   =400000
+    ZERO    =200000,
+    ONE     =300000,
+    C_ZERO  =400000,
+    C_ONE   =500000
 };
 
 static const size_t I[4] = {ZERO,ONE,C_ZERO,C_ONE};
