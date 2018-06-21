@@ -112,7 +112,7 @@ void send_data(const vector<int> &time){
 
 int main (int argc, char *argv[]){
     if(argc!=4){
-        cerr << "Usage: trans host port data";
+        cerr << "Usage: trans host port data" << endl;
         exit(EXIT_FAILURE);
     }
     create_udp(argv[1],argv[2]);

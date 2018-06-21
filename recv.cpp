@@ -167,7 +167,7 @@ char get_char(){
 
 int main (int argc, char *argv[]){
     if(argc!=2){
-        cerr << "Usage: recv port";
+        cerr << "Usage: recv port" << endl;
         exit(EXIT_FAILURE);
     }
     create_udp(argv[1]);
